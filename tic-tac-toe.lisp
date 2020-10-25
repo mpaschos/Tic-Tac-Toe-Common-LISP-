@@ -164,11 +164,13 @@
 
 (defun computer-move ()
   (let ((free-cells (has-board-free-cells)))
-    (print free-cells)
+    ;;(print free-cells)
     (if free-cells
         (progn
 	  (let ((index (random (length free-cells))))
-	    (make-move *computer* (nth index free-cells))))
+	    (make-move *computer* (nth index free-cells))
+	    (format t "~&*** Player ~a made a move to cell ~a ***" *computer* index)
+	    (values)))
 	(progn
 	  (format t "No moves available")
 	  nil))))
@@ -250,7 +252,7 @@
   (let ((row (is-row-win))
 	(col (is-col-win)))
 	(cond ((not (eql row nil)) (return-from player-won row))
-	      ((not (eql col nil)) (return-from player-won row))
+	      ((not (eql col nil)) (return-from player-won col))
 	      (t (return-from player-won nil)))))
   
 
@@ -272,14 +274,22 @@
 (defun play-game ()
   (clear-board)
   (select-player)
+  (display-board)
 
   (dotimes (i 9)
-    (when (is-game-over)
-      (return-from play-game (get-winner)))
     (progn
-      (display-board)
       (human-move)
       (next-player)
+      (display-board)
+      (if (is-game-over)
+	  (progn
+	    (format t "~%Game over. Winner: ~a" (get-winner))
+	    (return-from play-game (get-winner))))
+      
       (computer-move)
       (next-player)
-      (display-board))))
+      (display-board)
+      (if (is-game-over)
+	  (progn
+	    (format t "~%Game over. Winner: ~a" (get-winner))
+	    (return-from play-game (get-winner)))))))
