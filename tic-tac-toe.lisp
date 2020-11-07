@@ -238,6 +238,22 @@
   (return-from is-col-win nil))
 
 
+(defun is-diag-win ()
+  (let ((diag-1 (list (get-value-of 0)(get-value-of 4)(get-value-of 8)))
+	(diag-2 (list (get-value-of 2)(get-value-of 4)(get-value-of 6))))
+    (when
+	(or (every #'is-cell-X diag-1)
+	    (every #'is-cell-X diag-2))
+      (return-from is-diag-win 'X))
+
+    (when
+	(or (every #'is-cell-O diag-1)
+	    (every #'is-cell-O diag-2))
+      (return-from is-diag-win 'O)))
+  
+  (return-from is-diag-win nil))
+
+
 (defun is-draw ()
  (if
   (and
@@ -250,9 +266,11 @@
 
 (defun player-won ()
   (let ((row (is-row-win))
-	(col (is-col-win)))
+	(col (is-col-win))
+	(diag (is-diag-win)))
 	(cond ((not (eql row nil)) (return-from player-won row))
 	      ((not (eql col nil)) (return-from player-won col))
+	      ((not (eql diag nil)) (return-from player-won diag))
 	      (t (return-from player-won nil)))))
   
 
